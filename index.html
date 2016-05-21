@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript">
+        window.onload=function()
+        {
+            function checkUser()
+            {
+                var currentUser=localStorage.getItem("currentUser");
+
+                if(currentUser!=null)
+                {
+                    var el=document.getElementById("sign_in");
+                    el.style.visibility="hidden";
+
+                }
+                else
+                {
+                    var el=document.getElementById("sign_out");
+                    el.style.visibility="hidden";
+                }
+            }
+            checkUser();
+        }
+    </script>
+</head>
+<body>
+<fieldset>
+    <legend>
+        Main Page
+    </legend>
+    <ul>
+        <li>
+            <a href="create_User.html">
+                Register
+            </a>
+        </li>
+        <li>
+            <a href="chatMessages.html">
+                Messages
+            </a>
+        </li>
+        <li id="sign_in">
+            <a href="login.html">
+                Sign in
+            </a>
+        </li>
+        <li id="sign_out">
+            <a href="signOut.html">
+                Sign Out
+            </a>
+        </li>
+    </ul>
+</fieldset>
+</body>
+</html>

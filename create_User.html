@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript">
+        window.onload=function()
+
+   {
+
+    var ws=new WebSocket("ws://localhost:8086");
+
+    ws.onmessage=function (mess)
+    {
+
+      var result= JSON.parse(mess.data);
+
+        if(result.res==true)
+        {
+            alert("user was created");
+            window.location="index.html";
+        }
+        else
+        {
+            alert("user exist");
+        }
+
+    }
+
+    function validateUser(userName,fName,lName,password)
+    {
+        var flag=true;
+        if(userName.length<4 || userName.length>25 )
+        {
+            flag=false;
+        }
+        if(fName.length<4 || fName.length>25)
+        {
+            flag=false;
+        }
+        if(lName.length<4 || lName.length>25)
+        {
+            flag=false;
+        }
+        if(password.length<4 || password.length>10)
+        {
+            flag=false;
+        }
+        return flag;
+
+    }
+    function handler()
+    {
+        var userIsValid=validateUser(adduser.elements[0].value,adduser.elements[1].value,adduser.elements[2].value,adduser.elements[3].value);
+
+        if(userIsValid==false)
+        {
+            alert("error input");
+        }
+        else
+        {
+            var user =
+            {
+                userName: adduser.elements[0].value,
+                fName: adduser.elements[1].value,
+                lName: adduser.elements[2].value,
+                password: adduser.elements[3].value
+
+            }
+            var send =
+            {
+                type: "insert_User",
+                datauser: user
+            }
+
+            ws.send(JSON.stringify(send));
+        }
+
+    }
+    var but=document.getElementById("but");
+    but.onclick=handler;
+}
+    </script>
+</head>
+<body>
+<a href="index.html">
+    Go to Main Page
+</a>
+
+<fieldset>
+    <legend>
+        Register
+    </legend>
+    <form name="adduser">
+        <table>
+            <tr>
+                <td>
+                    Username
+                </td>
+                <td>
+                    <input type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    fName
+                </td>
+                <td>
+                    <input type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    lName
+                </td>
+                <td>
+                    <input type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    password
+                </td>
+                <td>
+                    <input type="password" />
+                </td>
+            </tr>
+        </table>
+
+        <input type="button" id="but" value="register"/>
+    </form>
+</fieldset>
+</body>
+</html>

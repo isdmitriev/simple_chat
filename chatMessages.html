@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript">
+    function createUlElement(message)
+    {
+            var ul=document.createElement("ul");
+            var li=document.createElement("li");
+            li.innerText="date: "+ message.date;
+            var li2=document.createElement("li");
+            li2.innerText="content: "+message.content;
+            li2.style.backgroundColor="aqua";
+            li2.style.color="red";
+
+            var li3=document.createElement("li");
+            li3.innerText="user: "+message.userName+" ("+message.fName+" "+message.lName+")";
+
+            ul.appendChild(li);
+            ul.appendChild(li3);
+            ul.appendChild(li2);
+            return ul;
+    }
+    function generateDom(messages)
+    {
+        var div=document.getElementById("mess");
+        var mas=JSON.parse(messages);
+        for(i=0;i<mas.length;i++)
+        {
+            div.appendChild(createUlElement(mas[i]));
+            div.appendChild(document.createElement("hr"));
+        }
+    }
+
+    function getCurrentDate()
+    {
+        var date=new Date();
+
+        var options = {
+            era: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+            timezone: 'UTC',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        };
+
+        return date.toLocaleString("ru", options);
+    }
+
+    function checkUser()
+    {
+        var currentUser=localStorage.getItem("currentUser");
+        if(currentUser==null)
+        {
+            var form=document.getElementById("m_form");
+            form.style.visibility="hidden";
+        }
+    }
+
+    function pageReload()
+    {
+        window.location="chatMessages.html";
+    }
+
+        window.onload=function()
+        {
+            function sendMessage()
+            {
+                var messageUser=document.getElementById("mes").value;
+
+                var currentUser=JSON.parse(localStorage.getItem("currentUser"));
+                var messageToServer=
+                {
+                    content:messageUser,
+                    userName:currentUser.userName,
+                    date:getCurrentDate(),
+                    fName:currentUser.fName,
+                    lName:currentUser.lName
+
+                }
+
+                var message=
+                {
+                    type:"addMessage",
+                    datauser:messageToServer
+                }
+
+                ws.send(JSON.stringify(message));
+            }
+
+            var message=
+            {
+                type:"allmessages"
+            };
+            function sendmes()
+            {
+                ws.send(JSON.stringify(message));
+            }
+
+            var ws=new WebSocket("ws://localhost:8086");
+            ws.onopen=function(s)
+            {
+
+                sendmes();
+            };
+
+            ws.onmessage=function(mes)
+
+
+            {
+                generateDom(mes.data);
+
+            };
+
+            var but=document.getElementById("mes_button");
+            but.onclick=sendMessage;
+            checkUser();
+            setTimeout(pageReload,30000);
+        }
+    </script>
+</head>
+<body>
+<a href="index.html">
+    Go to Main Page
+</a>
+<fieldset>
+    <legend>
+        Messages
+    </legend>
+    <div id="mess" style="width: 500px">
+    </div>
+</fieldset>
+<div id="mess_form">
+    <form name="message_form" id="m_form">
+        <textarea cols="20" rows="10" id="mes">
+
+        </textarea>
+        <br>
+        <input type="button" value="add message" id="mes_button" />
+    </form>
+</div>
+</body>
+</html>

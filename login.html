@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript">
+        window.onload=function()
+        {
+            var ws=new WebSocket("ws://localhost:8086");
+            function handler()
+            {
+                var userlogin=
+                {
+                    userName:loginform.elements[0].value,
+                    password:loginform.elements[1].value
+
+
+                }
+                var send=
+                {
+                    type:'checkuser',
+                    datauser:userlogin
+                }
+
+                ws.send(JSON.stringify(send));
+
+            }
+
+            ws.onmessage=function (mess)
+            {
+                var result= JSON.parse(mess.data);
+                if(result.status=="success")
+                {
+                    var user = JSON.stringify(result.user);
+                    var us = JSON.parse(user);
+                    var currentUser =
+                    {
+                        userName: us[0].userName,
+                        lName: us[0].lName,
+                        fName: us[0].fName
+                    }
+                    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+                    window.location="index.html";
+                }
+                else
+                {
+                    alert("user not exists");
+                }
+
+            }
+            var but=document.getElementById("but");
+            but.onclick=handler;
+        }
+    </script>
+</head>
+<body>
+<a href="index.html">
+    Go to Main Page
+</a>
+
+<fieldset>
+    <legend>
+        Login
+    </legend>
+    <form name="loginform">
+        <table>
+            <tr>
+                <td>
+                    userName
+                </td>
+                <td>
+                    <input type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                password
+                    </td>
+                <td>
+                    <input type="password" />
+                </td>
+            </tr>
+        </table>
+
+
+        <input type="button" id="but" value="login"/>
+    </form>
+</fieldset>
+</body>
+</html>
